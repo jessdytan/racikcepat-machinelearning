@@ -101,9 +101,6 @@ def convert_serving_to_people(serving_str: str) -> int:
     if not isinstance(serving_str, str):
         return 1
     serving_str = serving_str.lower()
-    num_match = re.search(r'(\d+)', serving_str)
-    if num_match:
-        return int(num_match.group(1))
     kg_match = re.search(r'(\d+\.?\d*)\s*kg', serving_str)
     if kg_match:
         kg = float(kg_match.group(1))
@@ -112,6 +109,9 @@ def convert_serving_to_people(serving_str: str) -> int:
     if gram_match:
         grams = int(gram_match.group(1))
         return max(1, grams // 125)
+    num_match = re.search(r'(\d+)', serving_str)
+    if num_match:
+        return int(num_match.group(1))
     return 1
 
 def load_stopwords_tag(filepath: str = None) -> set:
