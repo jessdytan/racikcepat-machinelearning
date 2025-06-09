@@ -9,12 +9,12 @@ from tqdm import tqdm
 
 def run_pipeline(
     keywords,
-    max_pages=300,
+    max_pages,
     slang_file: str = None,
     stopword_file: str = None,
     stopword_bahan_file: str = None,
     root_word_file: str = None,
-    output_path="data/resep.json"
+    output_path="data/raw/resep.csv"
 ):
     all_recipes = []
 
@@ -37,24 +37,22 @@ def run_pipeline(
     print("Membersihkan dan mentransformasi data...")
     df_clean = transform_data(all_recipes, slang_file=slang_file)
 
-    print("Menyimpan data ke file JSON...")
+    print("Menyimpan data ke file CSV...")
     load_and_merge(df_clean, output_path=output_path)
 
     print("Pipeline selesai!")
 
 if __name__ == "__main__":
-    keywords = ["sederhana", "kos", "gampang", "cepat", "mudah", "instan", 
-                "sedikit bahan", "bahan seadanya", "pemula", "modal dikit", 
-                "sastset", "2 bahan", "3 bahan", "4 bahan", "5 bahan", "murah"]
+    keywords = ["sederhana", "kos", "gampang", "cepat", "mudah", "instan", "murah","pemula"]
     slang_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'script', 'slang.txt'))
     stopword_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'script', 'stopwords-tag.txt'))
     stopword_bahan_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'script', 'stopwords-bahan.txt'))
     root_word_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'script', 'combined_root_words.txt'))
-    output_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'resep.json'))
+    output_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'resep.csv'))
 
     run_pipeline(
         keywords=keywords,
-        max_pages=300,
+        max_pages=1,
         slang_file=slang_file,
         stopword_file=stopword_file,
         stopword_bahan_file=stopword_bahan_file,
