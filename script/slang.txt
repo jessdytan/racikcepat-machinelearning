@@ -313,6 +313,10 @@ costamer : pelanggan
 check out : checkout
 cmn : cuman
 cancel : batal
+dagim : daging
+cabe : cabai
+bwg : bawang 
+bwng : bawang
 cmiiw : correct me if i'm wrong
 cus : ayo
 chanel : channel
@@ -335,11 +339,15 @@ check : cek
 customernya : customer nya
 chatnya : chat nya
 click : klik
+garah : garam
+sesui : sesuai
 control : kontrol
 complain : komplain
 cod : bayar di tempat
 ceklist : check list
 cepatt : cepat
+vanilla : vanili
+vanilli : vanili
 cma : cuma
 cucokk : cocok
 cpt : cepat
@@ -583,7 +591,6 @@ feb : febuari
 fakta2 : fakta fakta
 fyi : sebagai informasi
 grtis : gratis
-g : tidak
 ga : tidak
 gada : tidak ada
 gaada : tidak ada
@@ -808,10 +815,12 @@ kerreen : keren
 kslahan : kesalahan
 kadang2 : kadang kadang
 kaga : tidak
+telor : telur
 kagak : tidak
 kaka : kakak
 kirimny : kirimnya
 kalo : kalau
+pro : protein
 kla : kalau
 kitapun : kita pun
 kelalainnya : kelalaiannya
