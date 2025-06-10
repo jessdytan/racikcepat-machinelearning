@@ -3,21 +3,30 @@ import numpy as np
 import pytesseract
 from PIL import Image
 import re
+from fuzzywuzzy import fuzz
 
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 class ReceiptOCR:
-    def __init__(self, image_path):
-        self.image_path = image_path
-        self.original = cv2.imread(image_path)
+    def __init__(self, image_array, products_file='./data/product.txt'):
+        self.original = image_array
         if self.original is None:
-            raise ValueError("Gambar tidak dapat dimuat - periksa path")
-        
-        # Storage for processed images
+            raise ValueError("Gambar tidak valid.")
+
+        # Storage untuk hasil preprocessing
         self.gray = None
         self.denoised = None
         self.thresholded = None
         self.deskewed = None
+
+        self.known_products = self._load_products_from_file(products_file)
+
+    def _normalize_text(self, text):
+        """
+        Menghapus semua karakter non-alfanumerik dan ubah ke huruf kecil
+        untuk meningkatkan pencocokan fuzzy.
+        """
+        return re.sub(r'[^a-z0-9]', '', text.lower())
 
     def preprocess(self):
         self.gray = cv2.cvtColor(self.original, cv2.COLOR_BGR2GRAY)
@@ -36,7 +45,7 @@ class ReceiptOCR:
             cv2.THRESH_BINARY, 11, 2
         )
 
-        # Morph ops (sedikit erosi lalu dilasi) → bersih tanpa kehilangan teks
+        # Morph ops untuk membersihkan noise tanpa kehilangan teks
         kernel = np.ones((2, 2), np.uint8)
         self.final = cv2.morphologyEx(self.thresholded, cv2.MORPH_OPEN, kernel)
 
@@ -49,7 +58,8 @@ class ReceiptOCR:
         if not hasattr(self, 'final'):
             self.preprocess()
         
-        # Custom configuration for receipt OCR
+        # Konfigurasi Tesseract untuk OCR
+        # Menggunakan mode OEM 3 (LSTM) dan PSM 6 (Assume a single uniform block of text)
         config = r'--oem 3 --psm 6 -l ind+eng'
         
         text = pytesseract.image_to_string(
@@ -60,11 +70,11 @@ class ReceiptOCR:
         return text
 
     def parse_receipt(self):
-        """Improved parsing for Alfamart/Indomaret receipts"""
         text = self.extract_text()
-        # print("\n--- TEXT HASIL OCR ---")
-        # print(text)  # DEBUG: cek hasil OCR mentah
 
+        if not text:
+            raise ValueError("Tidak ada teks yang terdeteksi pada gambar")
+        
         # Items pattern - lebih fleksibel untuk format yang bervariasi
         items = []
         item_pattern = re.compile(r'^(.+?)\s+(\d+)\s+([\d.,]+)\s+([\d.,]+)$')
@@ -79,7 +89,7 @@ class ReceiptOCR:
             
             # Skip line kosong atau header/total
             if (not line or 
-                line.startswith(('Daftar', 'Qty', '----', 'HARGA', 'TOTAL', 'TUNAT', 'KEMBALI', 'PPN', 'LAYANAN'))):
+                line.startswith(('Daftar', 'Qty', '----', 'HARGA', 'TOTAL', 'TUNAI', 'KEMBALI', 'PPN', 'LAYANAN'))):
                 continue
                 
             match = item_pattern.match(line) or alt_pattern.match(line) or simple_pattern.match(line)
@@ -111,18 +121,85 @@ class ReceiptOCR:
                 print(f"- {name:<20}")
 
             print("\n")
-        
-if __name__ == "__main__":
-    image_path = r"app\ocr\image-test\struk-1.jpg"
 
-    try:
-        ocr = ReceiptOCR(image_path=image_path)
+    @staticmethod
+    def _load_products_from_file(filepath):
+        """
+        Memuat produk yang dikenal dan kategori mereka dari file teks.
+        Setiap baris dalam file harus dalam format: 'Nama Produk | Kategori'.
+        """
+        products = []
+
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        parts = line.split('|')
+                        if len(parts) == 2:
+                            product_name = parts[0].strip()
+                            category = parts[1].strip()
+                            products.append({'name': product_name.lower(), 'category': category})
+                        else:
+                            print(f"Peringatan: Melewatkan baris yang salah format di product.txt: {line}")
+        except FileNotFoundError:
+            print(f"Error: File produk '{filepath}' tidak ditemukan. Pastikan 'product.txt' ada di direktori yang sama.")
+        return products
+    
+    def find_closest_product(self, item_name, threshold=60):
+        """
+        Cari produk paling mirip berdasarkan fuzzy matching yang ditingkatkan.
+
+        Args:
+            item_name (str): Nama dari hasil OCR.
+            threshold (int): Ambang minimal skor kemiripan.
+
+        Returns:
+            dict: Hasil pencocokan produk, termasuk nama, kategori, dan skor.
+        """
+        best_match = None
+        best_score = -1
+
+        item_norm = self._normalize_text(item_name)
+
+        for product in self.known_products:
+            product_norm = self._normalize_text(product['name'])
+
+            score = max(
+                fuzz.token_set_ratio(item_norm, product_norm),
+                fuzz.partial_ratio(item_norm, product_norm),
+                fuzz.token_sort_ratio(item_norm, product_norm),
+            )
+
+            if score > best_score:
+                best_score = score
+                best_match = product
+
+        if best_match and best_score >= threshold:
+            return {
+                'nama': best_match['name'].title(),
+                'kategori': best_match['category'],
+                'skor_kesamaan': best_score
+            }
+        else:
+            return {
+                'nama': item_name.strip(),
+                'kategori': 'Tidak Diketahui',
+                'skor_kesamaan': best_score
+            }
+
+# Contoh penggunaan:      
+# if __name__ == "__main__":
+#     image_path = r"app\ocr\image-test\struk-1.jpg"
+
+#     try:
+#         ocr = ReceiptOCR(image_path=image_path)
         
-        print("Memproses OCR struk...")
-        parsed_data = ocr.parse_receipt()
+#         print("Memproses OCR struk...")
+#         parsed_data = ocr.parse_receipt()
         
-        # Cetak hasil
-        ocr.print_receipt(parsed_data)
+#         # Cetak hasil
+#         ocr.print_receipt(parsed_data)
         
-    except Exception as e:
-        print(f"Error: {str(e)}")
+#     except Exception as e:
+#         print(f"Error: {str(e)}")
