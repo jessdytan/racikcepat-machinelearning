@@ -1,5 +1,6 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, UploadFile, File, __version__, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import numpy as np
 from typing import List
@@ -7,10 +8,15 @@ import cv2
 from app.ocr.processor import ReceiptOCR # Import class OCR 
 from model.model import load_model_assets, find_recipes
 import tensorflow as tf
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-# === Load model sekali saja saat startup ===
+# Mount static folder
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
+
+# Load model assets
 model_path = "model/recipe_model.pkl"
 model, recipe_titles, ingredient_list = load_model_assets(model_path)
 
@@ -31,9 +37,11 @@ find_recipes_globals = {
 class IngredientsRequest(BaseModel):
     ingredients: list[str]
 
-@app.get("/")
-def home():
-    return {"message": "API is running!"}
+
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "version": __version__})
+
 
 @app.post("/predict")
 def predict_recipe(req: IngredientsRequest):
