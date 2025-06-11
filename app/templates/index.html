@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RacikCepat FastAPI</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #fe7743);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+        .logo {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        a {
+            color: #fe7743;
+            text-decoration: none;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        p {
+            color: #555;
+            font-size: 0.95rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.4rem;
+            }
+            .logo {
+                max-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/static/logo.png" alt="RacikCepat Logo" class="logo" />
+        <h1>Welcome to RacikCepat FastAPI v{{ version }}</h1>
+        <ul>
+            <li><a href="/docs">Go to API Docs</a></li>
+        </ul>
+        <p>Powered by <a href="https://vercel.com" target="_blank">Vercel</a></p>
+    </div>
+</body>
+</html>
