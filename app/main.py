@@ -16,7 +16,7 @@ model, recipe_titles, ingredient_list = load_model_assets(model_path)
 
 # Buat binary matrix sekali (untuk find_recipes)
 import pandas as pd
-df = pd.read_csv('./data/resep_tfidf_features.csv')
+df = pd.read_csv('./data/processed/resep_tfidf_features.csv')
 X_features_df = df.iloc[:, 1:]
 recipe_matrix_binary = tf.constant(X_features_df.values > 0, dtype=tf.bool)
 
@@ -54,7 +54,7 @@ async def recommend_from_receipt(image: UploadFile = File(...)):
         img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
 
         # 2. OCR + pencocokan produk
-        ocr = ReceiptOCR(img, products_file='data/product.txt')
+        ocr = ReceiptOCR(img, products_file='data/raw/product.txt')
         parsed = ocr.parse_receipt()
 
         categories = []
