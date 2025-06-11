@@ -4,7 +4,7 @@ fuzzywuzzy==0.18.0
 keras==3.10.0
 matplotlib==3.10.3
 nltk==3.9.1
-numpy==2.3.0
+numpy==1.26.4
 opencv_contrib_python==4.11.0.86
 opencv_python==4.11.0.86
 pandas==2.3.0
