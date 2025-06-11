@@ -3,7 +3,7 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 
-df = pd.read_csv('./data/resep_tfidf_features.csv')
+df = pd.read_csv('./data/processed/resep_tfidf_features.csv')
 recipe_titles = df.iloc[:, 0].tolist()
 X_features_df = df.iloc[:, 1:]
 ingredient_list = X_features_df.columns.tolist()
