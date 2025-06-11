@@ -49,8 +49,6 @@ class ReceiptOCR:
         kernel = np.ones((2, 2), np.uint8)
         self.final = cv2.morphologyEx(self.thresholded, cv2.MORPH_OPEN, kernel)
 
-        cv2.imwrite("preprocessed_debug.png", self.final)
-
         return self.final
 
     def extract_text(self):
