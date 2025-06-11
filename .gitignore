@@ -1,3 +1,6 @@
 /app/preprocessing/nltk_data
 /app/ocr/image-test
 /app/etl/__pycache__
+app/__pycache__/
+model/__pycache__/
+app/ocr/__pycache__/
