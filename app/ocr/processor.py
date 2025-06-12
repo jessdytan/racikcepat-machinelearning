@@ -5,7 +5,7 @@ from PIL import Image
 import re
 from fuzzywuzzy import fuzz
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'tesseract'
 
 class ReceiptOCR:
     def __init__(self, image_array, products_file='./data/product.txt'):

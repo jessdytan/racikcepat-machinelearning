@@ -21,3 +21,4 @@ tqdm==4.67.1
 uvicorn==0.29.0
 jinja2==3.1.4
 python-multipart
+python-Levenshtein
