@@ -13,16 +13,11 @@ from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-origins = [
-    "https://racik-cepat.vercel.app"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          
-    allow_credentials=True,
-    allow_methods=["*"],            # Allow All Mehthod (GET, POST, dll)
-    allow_headers=["*"],            # Allow All Headers
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Mount static folder
