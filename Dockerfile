@@ -1,9 +1,15 @@
 FROM python:3.12-slim
 
-# Install system dependencies (OpenCV needs libgl1, etc.)
+# Install all system dependencies in one RUN block
 RUN apt-get update && apt-get install -y \
     libgl1 \
     libglib2.0-0 \
+    tesseract-ocr \
+    tesseract-ocr-ind \
+    libtesseract-dev \
+    libleptonica-dev \
+    poppler-utils \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
