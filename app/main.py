@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, __version__, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
 from typing import List
@@ -11,6 +12,18 @@ import tensorflow as tf
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+
+origins = [
+    "https://racik-cepat.vercel.app"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          
+    allow_credentials=True,
+    allow_methods=["*"],            # Allow All Mehthod (GET, POST, dll)
+    allow_headers=["*"],            # Allow All Headers
+)
 
 # Mount static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
